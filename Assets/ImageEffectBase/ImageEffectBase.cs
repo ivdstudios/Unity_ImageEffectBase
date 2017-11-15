@@ -21,6 +21,16 @@ public class ImageEffectBase : MonoBehaviour
     /// </summary>
     public Material material;
 
+    /// <summary>
+    /// カメラへの参照。
+    /// </summary>
+    protected new Camera camera;
+
+    /// <summary>
+    /// カメラの DepthTextureMode 。
+    /// </summary>
+    public DepthTextureMode depthTextureMode;
+
     #endregion Field
 
     #region Method
@@ -28,9 +38,18 @@ public class ImageEffectBase : MonoBehaviour
     /// <summary>
     /// 初期化時に呼び出されます。
     /// </summary>
+    protected virtual void Awake()
+    {
+        this.camera = base.GetComponent<Camera>();
+        this.camera.depthTextureMode = this.depthTextureMode;
+    }
+
+    /// <summary>
+    /// 初期化時に呼び出されます。
+    /// </summary>
     protected virtual void Start()
     {
-        // NOTE:
+         // NOTE:
         // Awake 時でも良いように見えますが、問題があります。
         // Awake 時に呼び出すと、material への参照が設定されている場合でも、material が null になります。
 
@@ -49,6 +68,17 @@ public class ImageEffectBase : MonoBehaviour
     protected virtual void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
         Graphics.Blit(source, destination, this.material);
+    }
+
+    /// <summary>
+    /// Inspector の更新時に呼び出されます。
+    /// </summary>
+    protected virtual void OnValidate()
+    {
+        if (this.camera != null)
+        {
+            this.camera.depthTextureMode = this.depthTextureMode;
+        }
     }
 
     /// <summary>
